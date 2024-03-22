@@ -59,7 +59,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         # LoRA STUFF
         module_filters: list = EXPECTED
         rank: int = EXPECTED
-        train_tokens: list = EXPECTED
+        train_tokens: list = None
 
         # gdf customization
         adaptive_loss_weight: str = None
@@ -234,9 +234,10 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
             CLIPTextModelWithProjection.from_pretrained(self.config.clip_text_model_name)
             .requires_grad_(False)
             .to(dtype)
-            .to(self.device)
         )
-        text_model.gradient_checkpointing_enable()
+        if self.config.train_tokens:
+            text_model = text_model.to(self.device)
+            text_model.gradient_checkpointing_enable()
         print(
             f"Text encoder mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}"
         )
@@ -252,7 +253,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
 
         # PREPARE LORA
         update_tokens = []
-        for tkn_regex, aggr_regex in self.config.train_tokens:
+        for tkn_regex, aggr_regex in self.config.train_tokens or []:
             if (tkn_regex.startswith("[") and tkn_regex.endswith("]")) or (
                 tkn_regex.startswith("<") and tkn_regex.endswith(">")
             ):
@@ -279,7 +280,8 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
             update_tokens += selected_tokens
         update_tokens = list(set(update_tokens))  # remove duplicates
 
-        apply_retoken(text_model.text_model.embeddings.token_embedding, update_tokens)
+        if update_tokens:
+            apply_retoken(text_model.text_model.embeddings.token_embedding, update_tokens)
         apply_lora(generator, filters=self.config.module_filters, rank=self.config.rank)
         text_model.text_model.to(self.device)
         generator.to(self.device)

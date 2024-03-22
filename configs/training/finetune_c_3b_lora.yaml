@@ -25,11 +25,9 @@ use_fsdp: False
 # adaptive_loss_weight: True
 
 # LoRA specific
-module_filters: ['.attn']
+module_filters: [".attn"]
 rank: 16
-train_tokens:
-  - ['[_lf3_]', null] # token starts with "snail" -> "snail" & "snails", don't need to be reinitialized
-
+train_tokens: null
 
 # ema_start_iters: 5000
 # ema_iters: 100
