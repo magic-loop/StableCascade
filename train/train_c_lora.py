@@ -236,7 +236,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
             .to(dtype)
             .to(self.device)
         )
-        text_model.gradient_checkpointing_enable(True)
+        text_model.gradient_checkpointing_enable()
         print(
             f"Text encoder mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}"
         )
