@@ -1,9 +1,11 @@
 import torch
 import torch.nn as nn
 
+
 class Linear(torch.nn.Linear):
     def reset_parameters(self):
         return None
+
 
 class Conv2d(torch.nn.Conv2d):
     def reset_parameters(self):
@@ -35,6 +37,7 @@ class LayerNorm2d(nn.LayerNorm):
 
 class GlobalResponseNorm(nn.Module):
     "from https://github.com/facebookresearch/ConvNeXt-V2/blob/3608f67cc1dae164790c5d0aead7bf2d73d9719b/models/utils.py#L105"
+
     def __init__(self, dim):
         super().__init__()
         self.gamma = nn.Parameter(torch.zeros(1, 1, 1, dim))
@@ -53,20 +56,37 @@ class ResBlock(nn.Module):
         #         self.depthwise = SAMBlock(c, num_heads, expansion)
         self.norm = LayerNorm2d(c, elementwise_affine=False, eps=1e-6)
         self.channelwise = nn.Sequential(
-            Linear(c + c_skip, c * 4),
-            nn.GELU(),
-            GlobalResponseNorm(c * 4),
-            nn.Dropout(dropout),
-            Linear(c * 4, c)
+            Linear(c + c_skip, c * 4), nn.GELU(), GlobalResponseNorm(c * 4), nn.Dropout(dropout), Linear(c * 4, c)
         )
 
-    def forward(self, x, x_skip=None):
+        self.gradient_checkpointing = False
+
+    def set_gradient_checkpointing(self, value):
+        self.gradient_checkpointing = value
+
+    def forward_body(self, x, x_skip=None):
         x_res = x
         x = self.norm(self.depthwise(x))
         if x_skip is not None:
             x = torch.cat([x, x_skip], dim=1)
         x = self.channelwise(x.permute(0, 2, 3, 1)).permute(0, 3, 1, 2)
         return x + x_res
+
+    def forward(self, x, x_skip=None):
+        if self.training and self.gradient_checkpointing:
+            # logger.info("ResnetBlock2D: gradient_checkpointing")
+
+            def create_custom_forward(func):
+                def custom_forward(*inputs):
+                    return func(*inputs)
+
+                return custom_forward
+
+            x = torch.utils.checkpoint.checkpoint(create_custom_forward(self.forward_body), x, x_skip)
+        else:
+            x = self.forward_body(x, x_skip)
+
+        return x
 
 
 class AttnBlock(nn.Module):
@@ -75,14 +95,32 @@ class AttnBlock(nn.Module):
         self.self_attn = self_attn
         self.norm = LayerNorm2d(c, elementwise_affine=False, eps=1e-6)
         self.attention = Attention2D(c, nhead, dropout)
-        self.kv_mapper = nn.Sequential(
-            nn.SiLU(),
-            Linear(c_cond, c)
-        )
+        self.kv_mapper = nn.Sequential(nn.SiLU(), Linear(c_cond, c))
 
-    def forward(self, x, kv):
+        self.gradient_checkpointing = False
+
+    def set_gradient_checkpointing(self, value):
+        self.gradient_checkpointing = value
+
+    def forward_body(self, x, kv):
         kv = self.kv_mapper(kv)
         x = x + self.attention(self.norm(x), kv, self_attn=self.self_attn)
+        return x
+
+    def forward(self, x, kv):
+        if self.training and self.gradient_checkpointing:
+            # logger.info("AttnBlock: gradient_checkpointing")
+
+            def create_custom_forward(func):
+                def custom_forward(*inputs):
+                    return func(*inputs)
+
+                return custom_forward
+
+            x = torch.utils.checkpoint.checkpoint(create_custom_forward(self.forward_body), x, kv)
+        else:
+            x = self.forward_body(x, kv)
+
         return x
 
 
@@ -91,20 +129,37 @@ class FeedForwardBlock(nn.Module):
         super().__init__()
         self.norm = LayerNorm2d(c, elementwise_affine=False, eps=1e-6)
         self.channelwise = nn.Sequential(
-            Linear(c, c * 4),
-            nn.GELU(),
-            GlobalResponseNorm(c * 4),
-            nn.Dropout(dropout),
-            Linear(c * 4, c)
+            Linear(c, c * 4), nn.GELU(), GlobalResponseNorm(c * 4), nn.Dropout(dropout), Linear(c * 4, c)
         )
 
-    def forward(self, x):
+        self.gradient_checkpointing = False
+
+    def set_gradient_checkpointing(self, value):
+        self.gradient_checkpointing = value
+
+    def forward_body(self, x):
         x = x + self.channelwise(self.norm(x).permute(0, 2, 3, 1)).permute(0, 3, 1, 2)
+        return x
+
+    def forward(self, x):
+        if self.training and self.gradient_checkpointing:
+            # logger.info("FeedForwardBlock: gradient_checkpointing")
+
+            def create_custom_forward(func):
+                def custom_forward(*inputs):
+                    return func(*inputs)
+
+                return custom_forward
+
+            x = torch.utils.checkpoint.checkpoint(create_custom_forward(self.forward_body), x)
+        else:
+            x = self.forward_body(x)
+
         return x
 
 
 class TimestepBlock(nn.Module):
-    def __init__(self, c, c_timestep, conds=['sca']):
+    def __init__(self, c, c_timestep, conds=["sca"]):
         super().__init__()
         self.mapper = Linear(c_timestep, c * 2)
         self.conds = conds
