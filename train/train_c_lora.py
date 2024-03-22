@@ -286,7 +286,11 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         text_model.text_model.to(self.device)
         generator.to(self.device)
         lora = nn.ModuleDict()
-        lora["embeddings"] = text_model.text_model.embeddings.token_embedding.parametrizations.weight[0]
+        lora["embeddings"] = (
+            text_model.text_model.embeddings.token_embedding.parametrizations.weight[0]
+            if update_tokens
+            else nn.Parameter()
+        )
         lora["weights"] = nn.ModuleList()
         for module in generator.modules():
             if isinstance(module, LoRA) or (
