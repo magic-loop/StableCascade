@@ -280,17 +280,12 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
             update_tokens += selected_tokens
         update_tokens = list(set(update_tokens))  # remove duplicates
 
-        if update_tokens:
-            apply_retoken(text_model.text_model.embeddings.token_embedding, update_tokens)
+        apply_retoken(text_model.text_model.embeddings.token_embedding, update_tokens)
         apply_lora(generator, filters=self.config.module_filters, rank=self.config.rank)
         text_model.text_model.to(self.device)
         generator.to(self.device)
         lora = nn.ModuleDict()
-        lora["embeddings"] = (
-            text_model.text_model.embeddings.token_embedding.parametrizations.weight[0]
-            if update_tokens
-            else nn.ModuleList()
-        )
+        lora["embeddings"] = text_model.text_model.embeddings.token_embedding.parametrizations.weight[0]
         lora["weights"] = nn.ModuleList()
         for module in generator.modules():
             if isinstance(module, LoRA) or (
