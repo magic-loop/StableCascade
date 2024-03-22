@@ -1,5 +1,6 @@
 import torch
 import torchvision
+from torch_optimizer import Adafactor
 from torch import nn, optim
 from transformers import AutoTokenizer, CLIPTextModelWithProjection, CLIPVisionModelWithProjection
 from warmup_scheduler import GradualWarmupScheduler
@@ -153,6 +154,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         effnet.load_state_dict(effnet_checkpoint if 'state_dict' not in effnet_checkpoint else effnet_checkpoint['state_dict'])
         effnet.eval().requires_grad_(False)
         del effnet_checkpoint
+        print(f"Effnet mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}")
 
         # Previewer
         previewer = Previewer().to(self.device)
@@ -160,6 +162,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         previewer.load_state_dict(previewer_checkpoint if 'state_dict' not in previewer_checkpoint else previewer_checkpoint['state_dict'])
         previewer.eval().requires_grad_(False)
         del previewer_checkpoint
+        print(f"Previewer mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}")
 
         @contextmanager
         def dummy_context():
@@ -183,7 +186,9 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
                 for param_name, param in load_or_fail(self.config.generator_checkpoint_path).items():
                     set_module_tensor_to_device(generator, param_name, "cpu", value=param)
         generator = generator.to(dtype).to(self.device)
+        generator.requires_grad_(False)
         generator = self.load_model(generator, 'generator')
+        print(f"Generator mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}")
 
         # if self.config.use_fsdp:
         #     fsdp_auto_wrap_policy = functools.partial(size_based_auto_wrap_policy, min_num_params=3000)
@@ -192,7 +197,9 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         # CLIP encoders
         tokenizer = AutoTokenizer.from_pretrained(self.config.clip_text_model_name)
         text_model = CLIPTextModelWithProjection.from_pretrained(self.config.clip_text_model_name).requires_grad_(False).to(dtype).to(self.device)
+        print(f"Text encoder mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}")
         image_model = CLIPVisionModelWithProjection.from_pretrained(self.config.clip_image_model_name).requires_grad_(False).to(dtype).to(self.device)
+        print(f"Image encoder mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}")
 
         # PREPARE LORA
         update_tokens = []
@@ -252,7 +259,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         )
 
     def setup_optimizers(self, extras: Extras, models: Models) -> Optimizers:
-        optimizer = optim.AdamW(models.lora.parameters(), lr=self.config.lr)  # , eps=1e-7, betas=(0.9, 0.95))
+        optimizer = Adafactor(models.lora.parameters(), lr=self.config.lr)  # , eps=1e-7, betas=(0.9, 0.95))
         optimizer = self.load_optimizer(optimizer, 'lora_optim',
                                         fsdp_model=models.lora if self.config.use_fsdp else None)
         return self.Optimizers(generator=None, lora=optimizer)
@@ -269,8 +276,10 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         with torch.no_grad():
             latents = self.encode_latents(batch, models, extras)
             noised, noise, target, logSNR, noise_cond, loss_weight = extras.gdf.diffuse(latents, shift=1, loss_shift=1)
+            print(f"After encode latents mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}")
 
         with torch.cuda.amp.autocast(dtype=torch.bfloat16):
+            print(f"Before generate mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}")
             pred = models.generator(noised, noise_cond, **conditions)
             loss = nn.functional.mse_loss(pred, target, reduction='none').mean(dim=[1, 2, 3])
             loss_adjusted = (loss * loss_weight).mean() / self.config.grad_accum_steps

@@ -1,6 +1,7 @@
 import torch
 import torchvision
 from torch import nn, optim
+from torch_optimizer import Adafactor
 from transformers import AutoTokenizer, CLIPTextModelWithProjection, CLIPVisionModelWithProjection
 from warmup_scheduler import GradualWarmupScheduler
 
@@ -128,6 +129,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         effnet.load_state_dict(effnet_checkpoint if 'state_dict' not in effnet_checkpoint else effnet_checkpoint['state_dict'])
         effnet.eval().requires_grad_(False).to(self.device)
         del effnet_checkpoint
+        print(f"Effnet Mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}")
 
         # Previewer
         previewer = Previewer()
@@ -135,6 +137,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         previewer.load_state_dict(previewer_checkpoint if 'state_dict' not in previewer_checkpoint else previewer_checkpoint['state_dict'])
         previewer.eval().requires_grad_(False).to(self.device)
         del previewer_checkpoint
+        print(f"Previewer Mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}")
 
         @contextmanager
         def dummy_context():
@@ -164,6 +167,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
                     set_module_tensor_to_device(generator, param_name, "cpu", value=param)
         generator = generator.to(dtype).to(self.device)
         generator = self.load_model(generator, 'generator')
+        print(f"Generator Mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}")
 
         if generator_ema is not None:
             if loading_context is dummy_context:
@@ -183,7 +187,9 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         # CLIP encoders
         tokenizer = AutoTokenizer.from_pretrained(self.config.clip_text_model_name)
         text_model = CLIPTextModelWithProjection.from_pretrained(self.config.clip_text_model_name).requires_grad_(False).to(dtype).to(self.device)
+        print(f"Text encoder Mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}")
         image_model = CLIPVisionModelWithProjection.from_pretrained(self.config.clip_image_model_name).requires_grad_(False).to(dtype).to(self.device)
+        print(f"Image encoder Mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}")
 
         return self.Models(
             effnet=effnet, previewer=previewer,
@@ -192,7 +198,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         )
 
     def setup_optimizers(self, extras: Extras, models: Models) -> TrainingCore.Optimizers:
-        optimizer = optim.AdamW(models.generator.parameters(), lr=self.config.lr)  # , eps=1e-7, betas=(0.9, 0.95))
+        optimizer = Adafactor(models.generator.parameters(), lr=self.config.lr)  # , eps=1e-7, betas=(0.9, 0.95))
         optimizer = self.load_optimizer(optimizer, 'generator_optim',
                                         fsdp_model=models.generator if self.config.use_fsdp else None)
         return self.Optimizers(generator=optimizer)
@@ -258,7 +264,7 @@ if __name__ == '__main__':
     print("Launching Script")
     warpcore = WurstCore(
         config_file_path=sys.argv[1] if len(sys.argv) > 1 else None,
-        device=torch.device(int(os.environ.get("SLURM_LOCALID")))
+        device=torch.device("cuda")
     )
     # core.fsdp_defaults['sharding_strategy'] = ShardingStrategy.NO_SHARD
 
