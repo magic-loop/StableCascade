@@ -289,7 +289,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         lora["embeddings"] = (
             text_model.text_model.embeddings.token_embedding.parametrizations.weight[0]
             if update_tokens
-            else nn.Parameter()
+            else nn.ModuleList()
         )
         lora["weights"] = nn.ModuleList()
         for module in generator.modules():
