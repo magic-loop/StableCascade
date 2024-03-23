@@ -169,6 +169,8 @@ class DataCore(WarpCore):
                         "conditions": conditions,
                         "unconditions": unconditions,
                         "latents": latents,
+                        "captions": batch["captions"],
+                        "images": batch["images"],
                     }
                 )
                 batch = next(dataloader_iterator, None)
