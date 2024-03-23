@@ -25,13 +25,15 @@ from gdf import GDF, AdaptiveLossWeight
 transformers.utils.logging.set_verbosity_error()
 
 
-class InMemoryEmbeddingsDataset(torch.utils.data.IterableDataset):
+class InMemoryEmbeddingsDataset(torch.utils.data.Dataset):
     def __init__(self, embedding_batches):
         self.embedding_batches = embedding_batches
 
-    def __iter__(self):
-        for batch in self.embedding_batches:
-            yield batch
+    def __len__(self):
+        return len(self.embedding_batches)
+
+    def __getitem__(self, idx):
+        return self.embedding_batches[idx]
 
 
 class DataCore(WarpCore):
@@ -173,7 +175,6 @@ class DataCore(WarpCore):
                 dataset,
                 batch_size=real_batch_size,
                 num_workers=8,
-                pin_memory=True,
                 collate_fn=identity,
             )
             dataloader_iterator = iter(dataloader)
