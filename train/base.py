@@ -154,7 +154,8 @@ class DataCore(WarpCore):
 
         embedding_batches = []
         if self.config.cache_embeddings:
-            batch = next(dataloader_iterator)
+            print(f"Caching embeddings: step {len(embedding_batches)}")
+            batch = next(dataloader_iterator, None)
             while batch is not None:
                 conditions = self.get_conditions(batch, models, extras)
                 latents = []
@@ -166,7 +167,7 @@ class DataCore(WarpCore):
                         "latents": latents,
                     }
                 )
-                batch = next(dataloader_iterator)
+                batch = next(dataloader_iterator, None)
             dataset = InMemoryEmbeddingsDataset(embedding_batches)
             dataloader = DataLoader(
                 dataset,
