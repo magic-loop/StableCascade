@@ -158,12 +158,16 @@ class DataCore(WarpCore):
             batch = next(dataloader_iterator, None)
             while batch is not None and len(embedding_batches) < (self.config.max_cached_batches or 101):
                 conditions = self.get_conditions(batch, models, extras)
+                unconditions = self.get_conditions(
+                    batch, models, extras, is_eval=True, is_unconditional=True, eval_image_embeds=False
+                )
                 latents = []
                 with torch.no_grad():
                     latents = self.encode_latents(batch, models, extras)
                 embedding_batches.append(
                     {
                         "conditions": conditions,
+                        "unconditions": unconditions,
                         "latents": latents,
                     }
                 )
@@ -414,14 +418,21 @@ class TrainingCore(DataCore, WarpCore):
         with torch.no_grad():
             batch = next(data.iterator)
 
-            conditions = self.get_conditions(
-                batch, models, extras, is_eval=True, is_unconditional=False, eval_image_embeds=False
-            )
-            unconditions = self.get_conditions(
-                batch, models, extras, is_eval=True, is_unconditional=True, eval_image_embeds=False
-            )
+            conditions = []
+            latents = []
+            if self.config.cache_embeddings:
+                conditions = batch["conditions"]
+                unconditions = batch["conditions"]
+                latents = batch["latents"]
+            else:
+                conditions = self.get_conditions(
+                    batch, models, extras, is_eval=True, is_unconditional=False, eval_image_embeds=False
+                )
+                unconditions = self.get_conditions(
+                    batch, models, extras, is_eval=True, is_unconditional=True, eval_image_embeds=False
+                )
+                latents = self.encode_latents(batch, models, extras)
 
-            latents = self.encode_latents(batch, models, extras)
             noised, _, _, logSNR, noise_cond, _ = extras.gdf.diffuse(latents, shift=1, loss_shift=1)
 
             with torch.cuda.amp.autocast(dtype=torch.bfloat16):
