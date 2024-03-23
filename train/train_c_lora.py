@@ -234,10 +234,9 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
             CLIPTextModelWithProjection.from_pretrained(self.config.clip_text_model_name)
             .requires_grad_(False)
             .to(dtype)
+            .to(self.device)
         )
-        if self.config.train_tokens:
-            text_model = text_model.to(self.device)
-            text_model.gradient_checkpointing_enable()
+        text_model.gradient_checkpointing_enable()
         print(
             f"Text encoder mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}"
         )
@@ -337,9 +336,16 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
     def forward_pass(self, data: WarpCore.Data, extras: Extras, models: Models):
         batch = next(data.iterator)
 
-        conditions = self.get_conditions(batch, models, extras)
+        conditions = []
+        latents = []
+        if self.config.cache_embeddings:
+            conditions = batch["conditions"]
+            latents = batch["latents"]
+        else:
+            conditions = self.get_conditions(batch, models, extras)
+            with torch.no_grad():
+                latents = self.encode_latents(batch, models, extras)
         with torch.no_grad():
-            latents = self.encode_latents(batch, models, extras)
             noised, noise, target, logSNR, noise_cond, loss_weight = extras.gdf.diffuse(latents, shift=1, loss_shift=1)
             print(
                 f"After encode latents mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}"
