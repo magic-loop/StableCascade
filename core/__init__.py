@@ -30,7 +30,7 @@ class WarpCore(ABC):
         wandb_project: str = None
         wandb_entity: str = None
 
-        cache_embeddings: bool = False
+        cache_embeddings: bool = None
 
     @dataclass()  # not frozen, means that fields are mutable
     class Info:  # not inheriting from Base, because we don't want to enforce the default fields
