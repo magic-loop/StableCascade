@@ -334,8 +334,8 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         return self.Schedulers(lora=scheduler)
 
     def forward_pass(self, data: WarpCore.Data, extras: Extras, models: Models):
-        batch = next(data.iterator)
-        print(batch)
+        # Only works with bsz 1 for now
+        batch = next(data.iterator)[0]
 
         conditions = []
         latents = []
