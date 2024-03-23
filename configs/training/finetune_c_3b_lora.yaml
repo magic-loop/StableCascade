@@ -20,6 +20,7 @@ warmup_updates: 1
 # use_fsdp: True -> FSDP doesn't work at the moment for LoRA
 use_fsdp: False
 cache_embeddings: True
+max_cached_batches: 96
 
 # GDF
 # adaptive_loss_weight: True
