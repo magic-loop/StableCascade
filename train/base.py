@@ -33,7 +33,7 @@ class InMemoryEmbeddingsDataset(torch.utils.data.Dataset):
         return len(self.embedding_batches)
 
     def __getitem__(self, idx):
-        return self.embedding_batches[idx]
+        return self.embedding_batches[idx % len(self.embedding_batches)]
 
 
 class DataCore(WarpCore):
