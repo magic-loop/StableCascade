@@ -134,7 +134,6 @@ class DataCore(WarpCore):
         dataloader = DataLoader(
             dataset,
             batch_size=real_batch_size,
-            num_workers=8,
             pin_memory=True,
             collate_fn=identity if self.config.multi_aspect_ratio is not None else None,
         )
@@ -170,12 +169,10 @@ class DataCore(WarpCore):
                     }
                 )
                 batch = next(dataloader_iterator, None)
-            print(embedding_batches)
             dataset = InMemoryEmbeddingsDataset(embedding_batches)
             dataloader = DataLoader(
                 dataset,
                 batch_size=real_batch_size,
-                num_workers=8,
                 collate_fn=identity,
             )
             dataloader_iterator = iter(dataloader)
