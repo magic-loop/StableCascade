@@ -335,11 +335,12 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
 
     def forward_pass(self, data: WarpCore.Data, extras: Extras, models: Models):
         # Only works with bsz 1 for now
-        batch = next(data.iterator)[0]
+        batch = next(data.iterator)
 
         conditions = []
         latents = []
         if self.config.cache_embeddings:
+            batch = batch[0]
             conditions = batch["conditions"]
             for k, v in conditions.items():
                 v.requires_grad_()

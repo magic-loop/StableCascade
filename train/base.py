@@ -421,6 +421,7 @@ class TrainingCore(DataCore, WarpCore):
             conditions = []
             latents = []
             if self.config.cache_embeddings:
+                batch = batch[0]
                 conditions = batch["conditions"]
                 unconditions = batch["conditions"]
                 latents = batch["latents"]
