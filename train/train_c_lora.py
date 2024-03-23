@@ -335,6 +335,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
 
     def forward_pass(self, data: WarpCore.Data, extras: Extras, models: Models):
         batch = next(data.iterator)
+        print(batch)
 
         conditions = []
         latents = []

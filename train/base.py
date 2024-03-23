@@ -157,7 +157,6 @@ class DataCore(WarpCore):
         if self.config.cache_embeddings:
             batch = next(dataloader_iterator, None)
             while batch is not None and len(embedding_batches) < (self.config.max_cached_batches or 101):
-                print(f"Caching embeddings: step {len(embedding_batches)}")
                 conditions = self.get_conditions(batch, models, extras)
                 latents = []
                 with torch.no_grad():
