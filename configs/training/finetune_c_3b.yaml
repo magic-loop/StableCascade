@@ -12,7 +12,6 @@ wandb_entity: wandb_username
 lr: 1.0e-5
 batch_size: 1
 image_size: 512
-multi_aspect_ratio: [1/1]
 grad_accum_steps: 1
 updates: 4000
 backup_every: 1000
