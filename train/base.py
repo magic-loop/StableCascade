@@ -174,6 +174,7 @@ class DataCore(WarpCore):
                 batch_size=real_batch_size,
                 num_workers=8,
                 pin_memory=True,
+                collate_fn=identity if self.config.multi_aspect_ratio is not None else None,
             )
             dataloader_iterator = iter(dataloader)
 
