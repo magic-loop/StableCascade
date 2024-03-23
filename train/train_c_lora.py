@@ -341,8 +341,8 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         latents = []
         if self.config.cache_embeddings:
             conditions = batch["conditions"]
-            for condition in conditions:
-                condition.requires_grad_()
+            for k, v in conditions.items():
+                v.requires_grad_()
             latents = batch["latents"]
         else:
             conditions = self.get_conditions(batch, models, extras)
