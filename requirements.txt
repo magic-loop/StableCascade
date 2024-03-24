@@ -12,6 +12,7 @@ tqdm>=4.66.1
 matplotlib>=3.7.4
 webdataset>=0.2.79
 wandb>=0.16.2
+jupyterlab>=4.15.0
 munch>=4.0.0
 onnxruntime>=1.16.3
 einops>=0.7.0
