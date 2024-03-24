@@ -10,4 +10,4 @@ grad_accum_steps: 1
 
 effnet_checkpoint_path: /home/kevin/models/stable-cascade/effnet_encoder.safetensors
 stage_a_checkpoint_path: /home/kevin/models/stable-cascade/stage_a.safetensors
-generator_checkpoint_path: /home/kevin/models/stable-cascade/stage_c_bf16.safetensors
+generator_checkpoint_path: /home/kevin/models/stable-cascade/stage_b_bf16.safetensors
