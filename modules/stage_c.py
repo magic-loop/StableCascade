@@ -48,7 +48,7 @@ class UpDownBlock2d(nn.Module):
             x = torch.utils.checkpoint.checkpoint(
                 create_custom_forward(self.forward_body),
                 x,
-                use_reentrant=True,
+                use_reentrant=False,
             )
         else:
             x = self.forward_body(x)
