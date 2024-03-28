@@ -37,4 +37,4 @@ train_tokens: null
 webdataset_path: file:/home/kevin/data/dataset.tar
 effnet_checkpoint_path: /home/kevin/models/stable-cascade/effnet_encoder.safetensors
 previewer_checkpoint_path: /home/kevin/models/stable-cascade/previewer.safetensors
-generator_checkpoint_path: /home/kevin/models/stable-cascade/stage_c.safetensors
+generator_checkpoint_path: /home/kevin/models/stable-cascade/stage_c_bf16.safetensors
