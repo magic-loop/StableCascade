@@ -1,8 +1,9 @@
-import os
-import torch
 import json
+import os
 from pathlib import Path
+
 import safetensors
+import torch
 import wandb
 
 
@@ -26,7 +27,7 @@ def safe_save(ckpt, path):
         with open(path, "w", encoding="utf-8") as f:
             json.dump(ckpt, f, indent=4)
     elif path.endswith(".safetensors"):
-        safetensors.torch.save_file(ckpt, path)
+        safetensors.torch.save_model(ckpt, path)
     else:
         raise ValueError(f"File extension not supported: {path}")
 
