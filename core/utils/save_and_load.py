@@ -27,7 +27,7 @@ def safe_save(ckpt, path):
         with open(path, "w", encoding="utf-8") as f:
             json.dump(ckpt, f, indent=4)
     elif path.endswith(".safetensors"):
-        safetensors.torch.save_model(ckpt, path)
+        safetensors.torch.save_file(ckpt, path)
     else:
         raise ValueError(f"File extension not supported: {path}")
 
