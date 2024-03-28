@@ -11,7 +11,7 @@ wandb_entity: wandb_username
 # TRAINING PARAMS
 lr: 1.0e-4
 batch_size: 1
-image_size: 512
+image_size: 1024
 grad_accum_steps: 1
 updates: 4000
 backup_every: 1000
