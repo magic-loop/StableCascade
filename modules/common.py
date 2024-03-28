@@ -86,7 +86,7 @@ class ResBlock(nn.Module):
                 create_custom_forward(self.forward_body),
                 x,
                 x_skip,
-                use_reentrant=False,
+                use_reentrant=True,
             )
         else:
             x = self.forward_body(x, x_skip)
@@ -126,7 +126,7 @@ class AttnBlock(nn.Module):
                 create_custom_forward(self.forward_body),
                 x,
                 kv,
-                use_reentrant=False,
+                use_reentrant=True,
             )
         else:
             x = self.forward_body(x, kv)
@@ -164,7 +164,7 @@ class FeedForwardBlock(nn.Module):
             x = torch.utils.checkpoint.checkpoint(
                 create_custom_forward(self.forward_body),
                 x,
-                use_reentrant=False,
+                use_reentrant=True,
             )
         else:
             x = self.forward_body(x)
