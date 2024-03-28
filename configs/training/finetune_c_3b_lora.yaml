@@ -2,7 +2,6 @@
 experiment_id: stage_c_3b_lora
 checkpoint_path: /home/kevin/models/stable-cascade/loras_stage_c_bf16
 output_path: /home/kevin/models/stable-cascade/loras_stage_c_bf16
-checkpoint_extension: ckpt
 model_version: 3.6B
 
 # WandB

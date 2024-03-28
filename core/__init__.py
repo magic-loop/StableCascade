@@ -23,7 +23,7 @@ class WarpCore(ABC):
         experiment_id: str = EXPECTED_TRAIN
         checkpoint_path: str = EXPECTED_TRAIN
         output_path: str = EXPECTED_TRAIN
-        checkpoint_extension: str = "safetensors"
+        checkpoint_extension: str = "ckpt"
         dist_file_subfolder: str = ""
         allow_tf32: bool = True
 
