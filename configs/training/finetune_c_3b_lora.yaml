@@ -1,7 +1,7 @@
 # GLOBAL STUFF
 experiment_id: stage_c_3b_lora
 checkpoint_path: null
-output_path: /home/kevin/models/stable-cascade/lora_stage_c_bf16.safetensors
+output_path: /home/kevin/models/stable-cascade/loras_stage_c_bf16
 model_version: 3.6B
 
 # WandB
@@ -13,7 +13,7 @@ lr: 1.0e-4
 batch_size: 1
 image_size: 512
 grad_accum_steps: 1
-updates: 4000
+updates:000
 backup_every: 1000
 save_every: 1000
 warmup_updates: 1
