@@ -13,7 +13,7 @@ lr: 1.0e-4
 batch_size: 1
 image_size: 512
 grad_accum_steps: 1
-updates:000
+updates: 4000
 backup_every: 1000
 save_every: 1000
 warmup_updates: 1
