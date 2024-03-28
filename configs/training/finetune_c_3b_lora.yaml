@@ -11,7 +11,7 @@ wandb_entity: wandb_username
 # TRAINING PARAMS
 lr: 1.0e-4
 batch_size: 1
-image_size: 512
+image_size: 1024
 grad_accum_steps: 1
 updates: 4000
 backup_every: 1000
@@ -34,7 +34,7 @@ train_tokens: null
 # ema_iters: 100
 # ema_beta: 0.9
 
-webdataset_path: file:/home/kevin/data/dataset.tar
+webdataset_path: file:/home/kevin/data/lifestyle_dataset_v2.tar
 effnet_checkpoint_path: /home/kevin/models/stable-cascade/effnet_encoder.safetensors
 previewer_checkpoint_path: /home/kevin/models/stable-cascade/previewer.safetensors
 generator_checkpoint_path: /home/kevin/models/stable-cascade/stage_c_bf16.safetensors
