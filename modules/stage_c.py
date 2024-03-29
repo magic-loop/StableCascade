@@ -259,6 +259,7 @@ class StageC(nn.Module):
                             print(atr)
                         except AttributeError:
                             print("AttributeError accessing FSDP weight")
+                            print(block._fsdp_wrapped_module)
                         x = block(x, clip)
                     elif isinstance(block, TimestepBlock) or (
                         hasattr(block, "_fsdp_wrapped_module") and isinstance(block._fsdp_wrapped_module, TimestepBlock)
