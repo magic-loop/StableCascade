@@ -251,7 +251,7 @@ class StageC(nn.Module):
                         hasattr(block, "_fsdp_wrapped_module") and isinstance(block._fsdp_wrapped_module, AttnBlock)
                     ):
                         print(
-                            f"Before attn mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}"
+                            f"[{torch.cuda.current_device()}] down_encode attn mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}"
                         )
                         x = block(x, clip)
                     elif isinstance(block, TimestepBlock) or (
@@ -289,6 +289,9 @@ class StageC(nn.Module):
                     elif isinstance(block, AttnBlock) or (
                         hasattr(block, "_fsdp_wrapped_module") and isinstance(block._fsdp_wrapped_module, AttnBlock)
                     ):
+                        print(
+                            f"[{torch.cuda.current_device()}] up_encode attn mem={torch.cuda.memory_allocated()}, max_mem={torch.cuda.max_memory_allocated()}"
+                        )
                         x = block(x, clip)
                     elif isinstance(block, TimestepBlock) or (
                         hasattr(block, "_fsdp_wrapped_module") and isinstance(block._fsdp_wrapped_module, TimestepBlock)
