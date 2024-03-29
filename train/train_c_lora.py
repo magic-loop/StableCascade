@@ -13,6 +13,7 @@ from torch import nn, optim
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
 from torch.distributed.fsdp import ShardingStrategy
 from torch.distributed.fsdp.wrap import ModuleWrapPolicy, size_based_auto_wrap_policy
+from torch.nn.parallel import DistributedDataParallel
 from torch_optimizer import Adafactor
 from torchtools.transforms import SmartCrop
 from transformers import AutoTokenizer, CLIPTextModelWithProjection, CLIPVisionModelWithProjection
@@ -283,6 +284,10 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         apply_lora(generator, filters=self.config.module_filters, rank=self.config.rank)
         text_model.text_model.to(self.device)
         generator.to(self.device)
+        generator = DistributedDataParallel(
+            generator,
+            device_ids=[self.device],
+        )
         lora = nn.ModuleDict()
         lora["embeddings"] = text_model.text_model.embeddings.token_embedding.parametrizations.weight[0]
         lora["weights"] = nn.ModuleList()

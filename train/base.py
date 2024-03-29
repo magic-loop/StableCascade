@@ -1,4 +1,5 @@
 import json
+import os
 from abc import abstractmethod
 from dataclasses import dataclass
 from fractions import Fraction
@@ -14,6 +15,7 @@ import yaml
 from torch import nn
 from torch.distributed import barrier
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm
 from webdataset.handlers import warn_and_continue
 
@@ -175,10 +177,18 @@ class DataCore(WarpCore):
                 )
                 batch = next(dataloader_iterator, None)
             dataset = InMemoryEmbeddingsDataset(embedding_batches)
+            sampler = DistributedSampler(
+                dataset,
+                num_replicas=os.environ.get("WORLD_SIZE"),
+                rank=os.environ.get("RANK"),
+                shuffle=False,
+                drop_last=False,
+            )
             dataloader = DataLoader(
                 dataset,
                 batch_size=real_batch_size,
                 collate_fn=identity,
+                sampler=sampler,
             )
             dataloader_iterator = iter(dataloader)
 
