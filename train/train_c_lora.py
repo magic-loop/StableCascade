@@ -218,7 +218,8 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
                     set_module_tensor_to_device(generator, param_name, "cpu", value=param)
         generator = generator.to(dtype).to(self.device)
         generator.requires_grad_(False)
-        generator.set_gradient_checkpointing(True)
+        # Not compatible with FSDP as of 2024-03-29
+        generator.set_gradient_checkpointing(False)
         generator = self.load_model(generator, "generator")
         print(
             f"Generator mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}"
