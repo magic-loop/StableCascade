@@ -315,7 +315,7 @@ class StageC(nn.Module):
         # Model Blocks
         x = self.embedding(x)
         print(
-            f"Mid-stage c mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}"
+            f"[{torch.cuda.current_device()}] Stage C forward mem={torch.cuda.memory_allocated()}, max_mem={torch.cuda.max_memory_allocated()}"
         )
         # ControlNet is not supported yet
         # if cnet is not None:
