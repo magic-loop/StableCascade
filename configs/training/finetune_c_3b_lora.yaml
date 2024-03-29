@@ -17,7 +17,7 @@ updates: 4000
 backup_every: 1000
 save_every: 1000
 warmup_updates: 1
-use_fsdp: False
+use_fsdp: True
 cache_embeddings: True
 max_cached_batches: 77
 

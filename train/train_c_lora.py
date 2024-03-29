@@ -224,12 +224,6 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
             f"Generator mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}"
         )
 
-        if self.config.use_fsdp:
-            fsdp_auto_wrap_policy = functools.partial(size_based_auto_wrap_policy, min_num_params=3000)
-            generator = FSDP(
-                generator, **self.fsdp_defaults, auto_wrap_policy=fsdp_auto_wrap_policy, device_id=self.device
-            )
-
         # CLIP encoders
         tokenizer = AutoTokenizer.from_pretrained(self.config.clip_text_model_name)
         text_model = (
@@ -307,11 +301,15 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
 
         lora = self.load_model(lora, "lora")
         lora.to(self.device).train().requires_grad_(True)
+        # if self.config.use_fsdp:
+        # fsdp_auto_wrap_policy = functools.partial(size_based_auto_wrap_policy, min_num_params=3000)
+        # fsdp_auto_wrap_policy = ModuleWrapPolicy([LoRA, ReToken])
+        # lora = FSDP(lora, **self.fsdp_defaults, auto_wrap_policy=fsdp_auto_wrap_policy, device_id=self.device)
         if self.config.use_fsdp:
-            # fsdp_auto_wrap_policy = functools.partial(size_based_auto_wrap_policy, min_num_params=3000)
-            fsdp_auto_wrap_policy = ModuleWrapPolicy([LoRA, ReToken])
-            lora = FSDP(lora, **self.fsdp_defaults, auto_wrap_policy=fsdp_auto_wrap_policy, device_id=self.device)
-
+            fsdp_auto_wrap_policy = functools.partial(size_based_auto_wrap_policy, min_num_params=3000)
+            generator = FSDP(
+                generator, **self.fsdp_defaults, auto_wrap_policy=fsdp_auto_wrap_policy, device_id=self.device
+            )
         return self.Models(
             effnet=effnet,
             previewer=previewer,

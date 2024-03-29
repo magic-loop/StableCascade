@@ -31,8 +31,6 @@ def apply_lora(model, filters=None, rank=16):
         )
 
     for name, module in model.named_modules():
-        print(name)
-        print(module)
         if filters is None or any([f in name for f in filters]):
             if check_parameter(module, "weight"):
                 device, dtype = module.weight.device, module.weight.dtype
