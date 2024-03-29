@@ -18,10 +18,13 @@ class LoRA(nn.Module):
         self.enabled = True
 
     def forward(self, original_weights):
-        print(original_weights)
         if self.enabled:
             lora_shape = list(original_weights.shape[:2]) + [1] * (len(original_weights.shape) - 2)
             lora_weights = torch.matmul(self.lora_up.clone(), self.lora_down.clone()).view(*lora_shape) * self.scale
+            print("LORA WEIGHTS")
+            print(lora_weights)
+            print("SUM WEIGHTS")
+            print(original_weights + lora_weights)
             return original_weights + lora_weights
         else:
             return original_weights
