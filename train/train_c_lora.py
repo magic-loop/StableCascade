@@ -217,7 +217,8 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
                 for param_name, param in load_or_fail(self.config.generator_checkpoint_path).items():
                     set_module_tensor_to_device(generator, param_name, "cpu", value=param)
         generator = generator.to(dtype).to(self.device)
-        generator.requires_grad_(False)
+        # Commented out because it conflicts with model sharding in FSDP due to limitations with FSDP
+        # generator.requires_grad_(False)
         generator.set_gradient_checkpointing(True)
         generator = self.load_model(generator, "generator")
         print(
