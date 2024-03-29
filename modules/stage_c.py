@@ -250,15 +250,6 @@ class StageC(nn.Module):
                     elif isinstance(block, AttnBlock) or (
                         hasattr(block, "_fsdp_wrapped_module") and isinstance(block._fsdp_wrapped_module, AttnBlock)
                     ):
-                        print(
-                            f"[{torch.cuda.current_device()}] down_encode attn mem={torch.cuda.memory_allocated()}, max_mem={torch.cuda.max_memory_allocated()}"
-                        )
-                        try:
-                            atr = getattr(block, "weight")
-                            print(block)
-                            print(atr)
-                        except AttributeError:
-                            print("AttributeError accessing Attn weight")
                         x = block(x, clip)
                     elif isinstance(block, TimestepBlock) or (
                         hasattr(block, "_fsdp_wrapped_module") and isinstance(block._fsdp_wrapped_module, TimestepBlock)
@@ -295,9 +286,6 @@ class StageC(nn.Module):
                     elif isinstance(block, AttnBlock) or (
                         hasattr(block, "_fsdp_wrapped_module") and isinstance(block._fsdp_wrapped_module, AttnBlock)
                     ):
-                        print(
-                            f"[{torch.cuda.current_device()}] up_encode attn mem={torch.cuda.memory_allocated()}, max_mem={torch.cuda.max_memory_allocated()}"
-                        )
                         x = block(x, clip)
                     elif isinstance(block, TimestepBlock) or (
                         hasattr(block, "_fsdp_wrapped_module") and isinstance(block._fsdp_wrapped_module, TimestepBlock)
@@ -320,9 +308,6 @@ class StageC(nn.Module):
 
         # Model Blocks
         x = self.embedding(x)
-        print(
-            f"[{torch.cuda.current_device()}] Stage C forward mem={torch.cuda.memory_allocated()}, max_mem={torch.cuda.max_memory_allocated()}"
-        )
         # ControlNet is not supported yet
         # if cnet is not None:
         #     cnet = ControlNetDeliverer(cnet)
