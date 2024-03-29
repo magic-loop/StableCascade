@@ -306,11 +306,11 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         # fsdp_auto_wrap_policy = ModuleWrapPolicy([LoRA, ReToken])
         # lora = FSDP(lora, **self.fsdp_defaults, auto_wrap_policy=fsdp_auto_wrap_policy, device_id=self.device)
         if self.config.use_fsdp:
+            print(self.fsdp_defaults)
             fsdp_auto_wrap_policy = functools.partial(size_based_auto_wrap_policy, min_num_params=3000)
             generator = FSDP(
                 generator, **self.fsdp_defaults, auto_wrap_policy=fsdp_auto_wrap_policy, device_id=self.device
             )
-            print(generator)
         return self.Models(
             effnet=effnet,
             previewer=previewer,
