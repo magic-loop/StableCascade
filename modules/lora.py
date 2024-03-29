@@ -23,6 +23,8 @@ class LoRA(nn.Module):
             lora_weights = torch.matmul(self.lora_up.clone(), self.lora_down.clone()).view(*lora_shape) * self.scale
             print("LORA WEIGHTS")
             print(lora_weights)
+            print("ORIG WEIGHTS")
+            print(original_weights)
             print("SUM WEIGHTS")
             print(original_weights + lora_weights)
             return original_weights + lora_weights
