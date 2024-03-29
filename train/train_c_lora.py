@@ -308,7 +308,11 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         if self.config.use_fsdp:
             fsdp_auto_wrap_policy = functools.partial(size_based_auto_wrap_policy, min_num_params=3000)
             generator = FSDP(
-                generator, **self.fsdp_defaults, auto_wrap_policy=fsdp_auto_wrap_policy, device_id=self.device
+                generator,
+                **self.fsdp_defaults,
+                auto_wrap_policy=fsdp_auto_wrap_policy,
+                device_id=self.device,
+                ignored_modules=[LoRA],
             )
         print(generator)
         return self.Models(
