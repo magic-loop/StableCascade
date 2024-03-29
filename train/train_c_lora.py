@@ -13,7 +13,6 @@ from torch import nn, optim
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
 from torch.distributed.fsdp import ShardingStrategy
 from torch.distributed.fsdp.wrap import ModuleWrapPolicy, size_based_auto_wrap_policy
-from torch.nn.parallel import DistributedDataParallel
 from torch_optimizer import Adafactor
 from torchtools.transforms import SmartCrop
 from transformers import AutoTokenizer, CLIPTextModelWithProjection, CLIPVisionModelWithProjection
@@ -225,9 +224,11 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
             f"Generator mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}"
         )
 
-        # if self.config.use_fsdp:
-        #     fsdp_auto_wrap_policy = functools.partial(size_based_auto_wrap_policy, min_num_params=3000)
-        #     generator = FSDP(generator, **self.fsdp_defaults, auto_wrap_policy=fsdp_auto_wrap_policy, device_id=self.device)
+        if self.config.use_fsdp:
+            fsdp_auto_wrap_policy = functools.partial(size_based_auto_wrap_policy, min_num_params=3000)
+            generator = FSDP(
+                generator, **self.fsdp_defaults, auto_wrap_policy=fsdp_auto_wrap_policy, device_id=self.device
+            )
 
         # CLIP encoders
         tokenizer = AutoTokenizer.from_pretrained(self.config.clip_text_model_name)
@@ -284,10 +285,6 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         apply_lora(generator, filters=self.config.module_filters, rank=self.config.rank)
         text_model.text_model.to(self.device)
         generator.to(self.device)
-        generator = DistributedDataParallel(
-            generator,
-            device_ids=[self.device],
-        )
         lora = nn.ModuleDict()
         lora["embeddings"] = text_model.text_model.embeddings.token_embedding.parametrizations.weight[0]
         lora["weights"] = nn.ModuleList()
