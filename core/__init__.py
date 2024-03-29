@@ -143,9 +143,9 @@ class WarpCore(ABC):
 
     def setup_ddp(self, experiment_id, single_gpu=False):
         if not single_gpu:
-            local_rank = int(os.environ.get("SLURM_LOCALID"))
-            process_id = int(os.environ.get("SLURM_PROCID"))
-            world_size = int(os.environ.get("SLURM_NNODES")) * torch.cuda.device_count()
+            local_rank = int(os.environ.get("LOCAL_RANK"))
+            process_id = int(os.environ.get("RANK"))
+            world_size = int(os.environ.get("WORLD_SIZE"))
 
             self.process_id = process_id
             self.is_main_node = process_id == 0
