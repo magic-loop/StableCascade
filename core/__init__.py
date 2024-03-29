@@ -8,7 +8,7 @@ import wandb
 import yaml
 from torch import nn
 from torch.distributed import barrier, destroy_process_group, init_process_group
-from torch.distributed.fsdp import FullStateDictConfig
+from torch.distributed.fsdp import CPUOffload, FullStateDictConfig
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
 from torch.distributed.fsdp import MixedPrecision, ShardingStrategy, StateDictType
 from torch.utils.data import DataLoader, Dataset
@@ -68,7 +68,7 @@ class WarpCore(ABC):
     # FSDP stuff
     fsdp_defaults = {
         "sharding_strategy": ShardingStrategy.FULL_SHARD,
-        "cpu_offload": None,
+        "cpu_offload": CPUOffload(offload_params=True),
         "mixed_precision": MixedPrecision(
             param_dtype=torch.bfloat16,
             reduce_dtype=torch.bfloat16,
