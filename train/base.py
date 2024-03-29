@@ -177,6 +177,8 @@ class DataCore(WarpCore):
                 )
                 batch = next(dataloader_iterator, None)
             dataset = InMemoryEmbeddingsDataset(embedding_batches)
+            print(f"world size: {os.environ.get("WORLD_SIZE")}")
+            print(f"rank: {os.environ.get("RANK")}")
             sampler = DistributedSampler(
                 dataset,
                 num_replicas=int(os.environ.get("WORLD_SIZE")),

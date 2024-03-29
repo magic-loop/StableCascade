@@ -310,6 +310,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
             generator = FSDP(
                 generator, **self.fsdp_defaults, auto_wrap_policy=fsdp_auto_wrap_policy, device_id=self.device
             )
+            print(generator)
         return self.Models(
             effnet=effnet,
             previewer=previewer,
