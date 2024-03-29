@@ -250,6 +250,9 @@ class StageC(nn.Module):
                     elif isinstance(block, AttnBlock) or (
                         hasattr(block, "_fsdp_wrapped_module") and isinstance(block._fsdp_wrapped_module, AttnBlock)
                     ):
+                        print(
+                            f"Before attn mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}"
+                        )
                         x = block(x, clip)
                     elif isinstance(block, TimestepBlock) or (
                         hasattr(block, "_fsdp_wrapped_module") and isinstance(block._fsdp_wrapped_module, TimestepBlock)
@@ -308,6 +311,9 @@ class StageC(nn.Module):
 
         # Model Blocks
         x = self.embedding(x)
+        print(
+            f"Mid-stage c mem={torch.cuda.memory_allocated(self.device)}, max_mem={torch.cuda.max_memory_allocated(self.device)}"
+        )
         # ControlNet is not supported yet
         # if cnet is not None:
         #     cnet = ControlNetDeliverer(cnet)
