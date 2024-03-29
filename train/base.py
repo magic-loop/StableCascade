@@ -35,9 +35,7 @@ class InMemoryEmbeddingsDataset(torch.utils.data.Dataset):
         return len(self.embedding_batches) * 100
 
     def __getitem__(self, idx):
-        print(f"idx: {idx}")
         l = len(self.embedding_batches)
-        print(f"len embedding: {l}")
         return self.embedding_batches[idx % len(self.embedding_batches)]
 
 

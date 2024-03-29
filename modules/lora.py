@@ -5,7 +5,11 @@ from torch import nn
 class LoRA(nn.Module):
     def __init__(self, layer, name="weight", rank=16, alpha=1):
         super().__init__()
-        weight = getattr(layer, name)
+        weight = None
+        try:
+            weight = getattr(layer, name)
+        except AttributeError:
+            weight = getattr(layer.module, name)
         self.lora_down = nn.Parameter(torch.zeros((rank, weight.size(1))))
         self.lora_up = nn.Parameter(torch.zeros((weight.size(0), rank)))
         nn.init.normal_(self.lora_up, mean=0, std=1)
