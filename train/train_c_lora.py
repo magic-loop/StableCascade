@@ -11,7 +11,7 @@ from accelerate import init_empty_weights
 from accelerate.utils import set_module_tensor_to_device
 from torch import nn, optim
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
-from torch.distributed.fsdp import ShardingStrategy
+from torch.distributed.fsdp import ShardingStrategy, StateDictType
 from torch.distributed.fsdp.wrap import ModuleWrapPolicy, size_based_auto_wrap_policy
 from torch_optimizer import Adafactor
 from torchtools.transforms import SmartCrop
@@ -318,6 +318,11 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
                 auto_wrap_policy=fsdp_auto_wrap_policy,
                 device_id=self.device,
                 use_orig_params=True,
+            )
+            FSDP.set_state_dict_type(
+                generator,
+                StateDictType.FULL_STATE_DICT,
+                self.fsdp_fullstate_save_policy,
             )
         print(generator)
         return self.Models(
