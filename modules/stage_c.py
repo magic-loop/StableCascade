@@ -253,6 +253,12 @@ class StageC(nn.Module):
                         print(
                             f"[{torch.cuda.current_device()}] down_encode attn mem={torch.cuda.memory_allocated()}, max_mem={torch.cuda.max_memory_allocated()}"
                         )
+                        try:
+                            atr = getattr(block._fsdp_wrapped_module, "weight")
+                            print(block._fsdp_wrapped_module)
+                            print(atr)
+                        except AttributeError:
+                            print("AttributeError accessing FSDP weight")
                         x = block(x, clip)
                     elif isinstance(block, TimestepBlock) or (
                         hasattr(block, "_fsdp_wrapped_module") and isinstance(block._fsdp_wrapped_module, TimestepBlock)
