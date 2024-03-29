@@ -316,6 +316,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
                 **self.fsdp_defaults,
                 auto_wrap_policy=fsdp_auto_wrap_policy,
                 device_id=self.device,
+                use_orig_params=True,
             )
         print(generator)
         return self.Models(
