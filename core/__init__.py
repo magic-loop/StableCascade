@@ -153,8 +153,8 @@ class WarpCore(ABC):
             self.world_size = world_size
 
             dist_file_path = f"{os.getcwd()}/{self.config.dist_file_subfolder}dist_file_{experiment_id}"
-            # if os.path.exists(dist_file_path) and self.is_main_node:
-            #     os.remove(dist_file_path)
+            if os.path.exists(dist_file_path) and self.is_main_node:
+                os.remove(dist_file_path)
 
             torch.cuda.set_device(local_rank)
             init_process_group(
