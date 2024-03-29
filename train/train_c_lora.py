@@ -416,7 +416,7 @@ if __name__ == "__main__":
         config_file_path=sys.argv[1] if len(sys.argv) > 1 else None,
         device=torch.device(int(os.environ.get("LOCAL_RANK"))),
     )
-    warpcore.fsdp_defaults["sharding_strategy"] = ShardingStrategy.NO_SHARD
+    warpcore.fsdp_defaults["sharding_strategy"] = ShardingStrategy.FULL_SHARD
 
     # RUN TRAINING
     warpcore()

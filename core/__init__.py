@@ -67,7 +67,7 @@ class WarpCore(ABC):
 
     # FSDP stuff
     fsdp_defaults = {
-        "sharding_strategy": ShardingStrategy.SHARD_GRAD_OP,
+        "sharding_strategy": ShardingStrategy.FULL_SHARD,
         "cpu_offload": None,
         "mixed_precision": MixedPrecision(
             param_dtype=torch.bfloat16,
