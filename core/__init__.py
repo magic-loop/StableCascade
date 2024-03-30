@@ -260,6 +260,8 @@ class WarpCore(ABC):
         else:
             if self.is_main_node:
                 checkpoint = model.state_dict()
+                print("Saving model")
+                print(checkpoint)
                 safe_save(checkpoint, full_path)
                 del checkpoint
 
