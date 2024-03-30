@@ -269,7 +269,7 @@ class WarpCore(ABC):
         elif full_path is None and optim_id is None:
             raise ValueError("This method expects either 'optim_id' or 'full_path' to be defined")
         create_folder_if_necessary(full_path)
-        if fsdp_model is not None:
+        if fsdp_model is not None and FSDP.get_state_dict_type(fsdp_model) is not None:
             optim_statedict = FSDP.full_optim_state_dict(fsdp_model, optim)
             if self.is_main_node:
                 safe_save(optim_statedict, full_path)
