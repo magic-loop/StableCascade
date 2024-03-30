@@ -293,6 +293,10 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         if self.is_main_node:
             print("Updating tokens:", self.info.train_tokens)
             print(f"LoRA training {len(lora['weights'])} layers")
+            print(lora["weights"])
+            print(lora["weights"][0])
+            print(lora["weights"][0].state_dict())
+            print(lora["weights"].state_dict())
 
         if self.config.lora_checkpoint_path is not None:
             lora_checkpoint = load_or_fail(self.config.lora_checkpoint_path)
@@ -300,8 +304,6 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
                 lora_checkpoint if "state_dict" not in lora_checkpoint else lora_checkpoint["state_dict"]
             )
 
-        print("LORA")
-        print(lora.state_dict())
         lora = self.load_model(lora, "lora")
         lora.to(self.device).train().requires_grad_(True)
         # if self.config.use_fsdp:
