@@ -320,6 +320,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
                 use_orig_params=True,
             )
         print(generator)
+        print("LORA")
         print(lora.state_dict())
         return self.Models(
             effnet=effnet,
