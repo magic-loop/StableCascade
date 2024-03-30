@@ -10,7 +10,7 @@ from torch import nn
 from torch.distributed import barrier, destroy_process_group, init_process_group
 from torch.distributed.fsdp import CPUOffload, FullStateDictConfig
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
-from torch.distributed.fsdp import MixedPrecision, ShardingStrategy, StateDictType
+from torch.distributed.fsdp import MixedPrecision, ShardedStateDictConfig, ShardingStrategy, StateDictType
 from torch.utils.data import DataLoader, Dataset
 
 from .utils import EXPECTED, EXPECTED_TRAIN, Base, create_folder_if_necessary, load_or_fail, safe_save
@@ -77,6 +77,7 @@ class WarpCore(ABC):
         "limit_all_gathers": True,
     }
     fsdp_fullstate_save_policy = FullStateDictConfig(offload_to_cpu=True, rank0_only=True)
+    fsdp_shardedstate_save_policy = ShardedStateDictConfig(offload_to_cpu=True)
     # ------------
 
     # OVERRIDEABLE METHODS
@@ -251,10 +252,10 @@ class WarpCore(ABC):
         if is_fsdp:
             with FSDP.summon_full_params(model):
                 pass
-            with FSDP.state_dict_type(model, StateDictType.FULL_STATE_DICT, self.fsdp_fullstate_save_policy):
+            with FSDP.state_dict_type(model, StateDictType.SHARDED_STATE_DICT, self.fsdp_shardedstate_save_policy):
                 checkpoint = model.state_dict()
-            if self.is_main_node:
-                safe_save(checkpoint, full_path)
+            # if self.is_main_node:
+            safe_save(checkpoint, full_path)
             del checkpoint
         else:
             if self.is_main_node:
