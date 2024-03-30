@@ -415,9 +415,6 @@ class TrainingCore(DataCore, WarpCore):
         optimizers_dict = optimizers.to_dict()
         for key in self.models_to_save():
             model = models_dict[key]
-            print("SAVING MODEL")
-            print(key)
-            print(model)
             if model is not None:
                 self.save_model(model, f"{key}{suffix}", is_fsdp=self.config.use_fsdp)
         for key in optimizers_dict:

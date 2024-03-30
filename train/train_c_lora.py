@@ -284,6 +284,8 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         lora["embeddings"] = text_model.text_model.embeddings.token_embedding.parametrizations.weight[0]
         lora["weights"] = nn.ModuleList()
         for module in generator.modules():
+            print("Setting up lora weights")
+            print(module)
             if isinstance(module, LoRA) or (
                 hasattr(module, "_fsdp_wrapped_module") and isinstance(module._fsdp_wrapped_module, LoRA)
             ):
