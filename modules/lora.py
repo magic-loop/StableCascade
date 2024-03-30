@@ -10,13 +10,8 @@ class LoRA(nn.Module):
             weight = getattr(layer, name)
         except AttributeError:
             weight = getattr(layer.module, name)
-        print("LORA WEIGHT")
-        print(weight.size())
-        print(rank)
         self.lora_down = nn.Parameter(torch.zeros((rank, weight.size(1))))
         self.lora_up = nn.Parameter(torch.zeros((weight.size(0), rank)))
-        print(self.lora_down)
-        print(self.lora_up)
         nn.init.normal_(self.lora_up, mean=0, std=1)
 
         self.scale = alpha / rank
