@@ -293,10 +293,6 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
         if self.is_main_node:
             print("Updating tokens:", self.info.train_tokens)
             print(f"LoRA training {len(lora['weights'])} layers")
-            print(lora["weights"])
-            print(lora["weights"][0])
-            print(lora["weights"][0].state_dict())
-            print(lora["weights"].state_dict())
 
         if self.config.lora_checkpoint_path is not None:
             lora_checkpoint = load_or_fail(self.config.lora_checkpoint_path)
