@@ -252,8 +252,8 @@ class WarpCore(ABC):
         if is_fsdp:
             with FSDP.summon_full_params(model):
                 pass
-            test = FSDP.get_state_dict_type(model)
-            print(test)
+            print(model)
+            print(FSDP.get_state_dict_type(model))
             with FSDP.state_dict_type(model, StateDictType.FULL_STATE_DICT, self.fsdp_fullstate_save_policy):
                 checkpoint = model.state_dict()
             if self.is_main_node:
