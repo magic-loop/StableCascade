@@ -287,9 +287,6 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
             if isinstance(module, LoRA) or (
                 hasattr(module, "_fsdp_wrapped_module") and isinstance(module._fsdp_wrapped_module, LoRA)
             ):
-                print("Setting up lora weights")
-                print(module)
-                print(module.state_dict())
                 lora["weights"].append(module)
 
         self.info.train_tokens = [(i, tokenizer.decode(i)) for i in update_tokens]
@@ -323,6 +320,7 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
                 use_orig_params=True,
             )
         print(generator)
+        print(lora.state_dict())
         return self.Models(
             effnet=effnet,
             previewer=previewer,
