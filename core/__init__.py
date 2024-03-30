@@ -252,10 +252,10 @@ class WarpCore(ABC):
         if is_fsdp:
             with FSDP.summon_full_params(model):
                 pass
-            with FSDP.state_dict_type(model, StateDictType.SHARDED_STATE_DICT, self.fsdp_shardedstate_save_policy):
+            with FSDP.state_dict_type(model, StateDictType.FULL_STATE_DICT, self.fsdp_fullstate_save_policy):
                 checkpoint = model.state_dict()
-            # if self.is_main_node:
-            safe_save(checkpoint, full_path)
+            if self.is_main_node:
+                safe_save(checkpoint, full_path)
             del checkpoint
         else:
             if self.is_main_node:
