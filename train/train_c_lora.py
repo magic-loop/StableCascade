@@ -319,11 +319,6 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
                 device_id=self.device,
                 use_orig_params=True,
             )
-            FSDP.set_state_dict_type(
-                generator,
-                StateDictType.FULL_STATE_DICT,
-                self.fsdp_fullstate_save_policy,
-            )
         print(generator)
         return self.Models(
             effnet=effnet,
