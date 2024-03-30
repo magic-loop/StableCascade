@@ -249,11 +249,9 @@ class WarpCore(ABC):
         elif full_path is None and model_id is None:
             raise ValueError("This method expects either 'model_id' or 'full_path' to be defined")
         create_folder_if_necessary(full_path)
-        if is_fsdp:
+        if is_fsdp and FSDP.get_state_dict_type(model):
             with FSDP.summon_full_params(model):
                 pass
-            print(model)
-            print(FSDP.get_state_dict_type(model))
             with FSDP.state_dict_type(model, StateDictType.FULL_STATE_DICT, self.fsdp_fullstate_save_policy):
                 checkpoint = model.state_dict()
             if self.is_main_node:
