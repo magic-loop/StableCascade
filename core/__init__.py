@@ -250,7 +250,8 @@ class WarpCore(ABC):
             raise ValueError("This method expects either 'model_id' or 'full_path' to be defined")
         create_folder_if_necessary(full_path)
         print(f"[{torch.cuda.current_device()}] SAVING MODEL")
-        print(f"[{torch.cuda.current_device()}] {model["weights"][0].state_dict()}")
+        st = model["weights"][0].state_dict()
+        print(f"[{torch.cuda.current_device()}] {st}")
         if is_fsdp and FSDP.get_state_dict_type(model):
             with FSDP.summon_full_params(model):
                 pass
