@@ -302,6 +302,8 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
 
         lora = self.load_model(lora, "lora")
         lora.to(self.device).train().requires_grad_(True)
+        print("LORA")
+        print(lora.state_dict())
         # if self.config.use_fsdp:
         # fsdp_auto_wrap_policy = functools.partial(size_based_auto_wrap_policy, min_num_params=3000)
         # fsdp_auto_wrap_policy = ModuleWrapPolicy([LoRA, ReToken])
@@ -320,8 +322,6 @@ class WurstCore(TrainingCore, DataCore, WarpCore):
                 use_orig_params=True,
             )
         print(generator)
-        print("LORA")
-        print(lora.state_dict())
         return self.Models(
             effnet=effnet,
             previewer=previewer,
