@@ -1,6 +1,6 @@
 # GLOBAL STUFF
 experiment_id: stage_c_3b_finetuning
-checkpoint_path: /home/kevin/models/stable-cascade/stage_c_bf16.safetensors
+checkpoint_path: /home/kevin/models/stable-cascade/finetune_checkpoints_stage_c_bf16
 output_path: /home/kevin/models/stable-cascade/finetune_checkpoints_stage_c_bf16
 model_version: 3.6B
 
