@@ -249,9 +249,6 @@ class WarpCore(ABC):
         elif full_path is None and model_id is None:
             raise ValueError("This method expects either 'model_id' or 'full_path' to be defined")
         create_folder_if_necessary(full_path)
-        print(f"[{torch.cuda.current_device()}] SAVING MODEL")
-        st = model["weights"][0].state_dict()
-        print(f"[{torch.cuda.current_device()}] {st}")
         if is_fsdp and FSDP.get_state_dict_type(model):
             with FSDP.summon_full_params(model):
                 pass
@@ -263,9 +260,6 @@ class WarpCore(ABC):
         else:
             if self.is_main_node:
                 checkpoint = model.state_dict()
-                print("Saving model")
-                print(checkpoint)
-                safe_save(checkpoint, full_path)
                 del checkpoint
 
     def save_optimizer(self, optim, optim_id=None, full_path=None, fsdp_model=None):
