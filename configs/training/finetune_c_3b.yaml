@@ -14,9 +14,9 @@ batch_size: 2
 image_size: 1024
 grad_accum_steps: 1
 updates: 4000
-backup_every: 1
-save_every: 1
-warmup_updates: 1
+backup_every: 1000
+save_every: 1000
+warmup_updates: 200
 use_fsdp: True
 
 # GDF
