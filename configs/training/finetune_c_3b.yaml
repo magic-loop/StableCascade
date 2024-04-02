@@ -9,14 +9,14 @@ wandb_project: StableCascade
 wandb_entity: wandb_username
 
 # TRAINING PARAMS
-lr: 1.0e-5
+lr: 2.0e-6
 batch_size: 2
 image_size: 1024
 grad_accum_steps: 1
-updates: 4000
+updates: 3000
 backup_every: 1000
-save_every: 1000
-warmup_updates: 200
+save_every: 250
+warmup_updates: 300
 use_fsdp: True
 
 # GDF
@@ -29,3 +29,4 @@ adaptive_loss_weight: True
 webdataset_path: file:/home/kevin/data/lifestyle_dataset_v2.tar
 effnet_checkpoint_path: /home/kevin/models/stable-cascade/effnet_encoder.safetensors
 previewer_checkpoint_path: /home/kevin/models/stable-cascade/previewer.safetensors
+generator_checkpoint_path: /home/kevin/models/stable-cascade/stage_c_bf16.safetensors
