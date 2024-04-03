@@ -4,5 +4,6 @@ export PYTHONPATH="/home/kevin/repos/StableCascade:$PYTHONPATH"
 
 source venv/bin/activate
 
-# Set $NUM_TRAINERS in environment before running the script
-torchrun --standalone --nnodes=1 --nproc-per-node=$NUM_TRAINERS train/train_c.py configs/training/finetune_c_3b.yaml
+# Set $NUM_TRAINERS in environment and uncomment torchrun to run distributed training
+# torchrun --standalone --nnodes=1 --nproc-per-node=$NUM_TRAINERS train/train_c.py configs/training/finetune_c_3b.yaml
+python3 train/train_c.py configs/training/finetune_c_3b.yaml
