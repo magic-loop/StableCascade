@@ -260,6 +260,7 @@ class WarpCore(ABC):
         else:
             if self.is_main_node:
                 checkpoint = model.state_dict()
+                safe_save(checkpoint, full_path)
                 del checkpoint
 
     def save_optimizer(self, optim, optim_id=None, full_path=None, fsdp_model=None):
