@@ -2,6 +2,6 @@
 model_version: 3.6B
 dtype: bfloat16
 
-effnet_checkpoint_path: /home/kevin/models/stable-cascade/effnet_encoder.safetensors
-previewer_checkpoint_path: /home/kevin/models/stable-cascade/previewer.safetensors
-generator_checkpoint_path: /home/kevin/models/stable-cascade/finetuned_stage_c_1k.ckpt
+effnet_checkpoint_path: /datadrive/models/stable-cascade/effnet_encoder.safetensors
+previewer_checkpoint_path: /datadrive/models/stable-cascade/previewer.safetensors
+generator_checkpoint_path: /datadrive/models/stable-cascade/finetuned_stage_c_3k.ckpt
