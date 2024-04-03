@@ -1,7 +1,7 @@
 # GLOBAL STUFF
-experiment_id: stage_c_3b_finetuning
-checkpoint_path: /home/kevin/models/stable-cascade/finetune_checkpoints_stage_c_bf16
-output_path: /home/kevin/models/stable-cascade/finetune_checkpoints_stage_c_bf16
+experiment_id: finetuned_stage_c_bf16
+checkpoint_path: /datadrive/models/stable-cascade/finetuned_stage_c_bf16
+output_path: /datadrive/models/stable-cascade/finetuned_stage_c_bf16
 model_version: 3.6B
 
 # WandB
@@ -9,8 +9,8 @@ wandb_project: StableCascade
 wandb_entity: wandb_username
 
 # TRAINING PARAMS
-lr: 2.0e-6
-batch_size: 2
+lr: 2.0e-5
+batch_size: 1
 image_size: 1024
 grad_accum_steps: 1
 updates: 3000
@@ -26,7 +26,7 @@ adaptive_loss_weight: True
 # ema_iters: 100
 # ema_beta: 0.9
 
-webdataset_path: file:/home/kevin/data/lifestyle_dataset_v2.tar
-effnet_checkpoint_path: /home/kevin/models/stable-cascade/effnet_encoder.safetensors
-previewer_checkpoint_path: /home/kevin/models/stable-cascade/previewer.safetensors
-generator_checkpoint_path: /home/kevin/models/stable-cascade/stage_c_bf16.safetensors
+webdataset_path: file:/datadrive/data/lifestyle_dataset_v2.tar
+effnet_checkpoint_path: /datadrive/models/stable-cascade/effnet_encoder.safetensors
+previewer_checkpoint_path: /datadrive/models/stable-cascade/previewer.safetensors
+generator_checkpoint_path: /datadrive/models/stable-cascade/stage_c_bf16.safetensors
