@@ -9,7 +9,7 @@ wandb_project: StableCascade
 wandb_entity: wandb_username
 
 # TRAINING PARAMS
-lr: 2.0e-5
+lr: 1.0e-5
 batch_size: 1
 image_size: 1024
 grad_accum_steps: 1
