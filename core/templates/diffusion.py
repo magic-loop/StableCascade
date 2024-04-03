@@ -242,7 +242,8 @@ class DiffusionCore(WarpCore):
         return ["generator", "generator_ema"]
 
     def save_checkpoints(self, models: Models, optimizers: Optimizers, suffix=None):
-        barrier()
+        if torch.distributed.is_initialized():
+            barrier()
         suffix = "" if suffix is None else suffix
         self.save_info(self.info, suffix=suffix)
         models_dict = models.to_dict()

@@ -292,7 +292,7 @@ class WarpCore(ABC):
         self.config: self.Config = self.setup_config(config_file_path, config_dict, training)
         self.info: self.Info = self.setup_info()
 
-    def __call__(self, single_gpu=False):
+    def __call__(self, single_gpu=True):
         self.setup_ddp(self.config.experiment_id, single_gpu=single_gpu)  # this will change the device to the CUDA rank
         self.setup_wandb()
         if self.config.allow_tf32:

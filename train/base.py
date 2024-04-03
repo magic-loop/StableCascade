@@ -408,7 +408,8 @@ class TrainingCore(DataCore, WarpCore):
                     self.sample(models, data, extras)
 
     def save_checkpoints(self, models: Models, optimizers: Optimizers, suffix=None):
-        barrier()
+        if torch.distributed.is_initialized():
+            barrier()
         suffix = "" if suffix is None else suffix
         self.save_info(self.info, suffix=suffix)
         models_dict = models.to_dict()
