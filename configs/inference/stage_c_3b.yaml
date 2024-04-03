@@ -4,4 +4,4 @@ dtype: bfloat16
 
 effnet_checkpoint_path: /home/kevin/models/stable-cascade/effnet_encoder.safetensors
 previewer_checkpoint_path: /home/kevin/models/stable-cascade/previewer.safetensors
-generator_checkpoint_path: /home/kevin/models/stable-cascade/finetuned_stage_c_2k.ckpt
+generator_checkpoint_path: /home/kevin/models/stable-cascade/finetuned_stage_c_1k.ckpt
