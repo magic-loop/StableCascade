@@ -17,7 +17,7 @@ updates: 3000
 backup_every: 1000
 save_every: 250
 warmup_updates: 300
-use_fsdp: True
+use_fsdp: False
 
 # GDF
 adaptive_loss_weight: True
